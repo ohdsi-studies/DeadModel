@@ -41,6 +41,9 @@ Getting Started
 
   ```r
 install.packages("devtools")
+# If you dont have PatientLevelPrediction installed uncomment lines 45-46 and run:
+#devtools::install_github("OHDSI/FeatureExtraction")
+#devtools::install_github("OHDSI/PatientLevelPrediction")
 devtools::install_github("ohdsi-studies/DeadModel")
 
 library(DeadModel)
