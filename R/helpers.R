@@ -171,7 +171,7 @@ checkInstall <- function(connectionDetails=NULL){
 }
 
 
-flog.warn <- OhdsiRTools::logWarn
+flog.warn <- ParallelLogger::logWarn
 
 
 
