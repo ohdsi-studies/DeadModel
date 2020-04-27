@@ -1,4 +1,4 @@
-DEAD Model - imputing death in OMOP CDM data
+Identifying the DEAD: Development and Validation of a Patient-Level Model to Predict Death Status in Population-Level Claims Data
 =============
 
 <img src="https://img.shields.io/badge/Study%20Status-Design%20Finalized-brightgreen.svg" alt="Study Status: Design Finalized">
@@ -10,7 +10,7 @@ DEAD Model - imputing death in OMOP CDM data
 - Study lead forums tag: **[jreps](https://forums.ohdsi.org/u/jreps)**
 - Study start date: **Jan 1, 2018**
 - Study end date: **April 1, 2018**
-- Protocol: **[Protocol]()**
+- Protocol: **-**
 - Publications: **[Paper](https://link.springer.com/article/10.1007/s40264-019-00827-0)**
 - Results explorer: **[Shiny App](http://data.ohdsi.org/DeadImputation/)**
 
