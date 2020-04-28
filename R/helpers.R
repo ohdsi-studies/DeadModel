@@ -47,15 +47,16 @@ validateDeadModel <- function(connectionDetails,
   writeLines('Implementing DEAD model...')
   result <- PatientLevelPrediction::externalValidatePlp(plpResult = plpResult,
                                                         oracleTempSchema = oracleTempSchema,
-                                connectionDetails=connectionDetails,
-                                validationSchemaCdm=cdmDatabaseSchema,
-                                validationSchemaTarget=cohortDatabaseSchema,
-                                validationSchemaOutcome = cohortDatabaseSchema,
-                                validationTableTarget=cohortTable,
-                                validationTableOutcome = cohortTable,
-                                validationIdTarget=targetId,
-                                validationIdOutcome=outcomeId,
-                                keepPrediction=T)
+                                                        connectionDetails=connectionDetails,
+                                                        validationSchemaCdm=cdmDatabaseSchema,
+                                                        validationSchemaTarget=cohortDatabaseSchema,
+                                                        validationSchemaOutcome = cohortDatabaseSchema,
+                                                        validationTableTarget=cohortTable,
+                                                        validationTableOutcome = cohortTable,
+                                                        validationIdTarget=targetId,
+                                                        validationIdOutcome=outcomeId,
+                                                        keepPrediction=T,
+                                                        databaseNames = 'Missing')
   return(result)
 }
 
