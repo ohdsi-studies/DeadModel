@@ -1,7 +1,7 @@
 Identifying the DEAD: Development and Validation of a Patient-Level Model to Predict Death Status in Population-Level Claims Data
 =============
 
-<img src="https://img.shields.io/badge/Study%20Status-Design%20Finalized-brightgreen.svg" alt="Study Status: Design Finalized">
+<img src="https://img.shields.io/badge/Study%20Status-Complete-orange.svg" alt="Study Status: Complete"> 
 
 - Analytics use case(s): **Patient-Level Prediction**
 - Study type: **Clinical Application**
