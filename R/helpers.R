@@ -99,7 +99,9 @@ applyDeadModel <- function(connectionDetails,
 
   plpModel <- PatientLevelPrediction::loadPlpModel(system.file('model', package='DeadModel'))
 
-  checkIsClass(plpModel, 'plpModel')
+  if(!inherits(plpModel, 'plpModel')){
+    stop('Incorrect plpModel class')
+  }
 
   validationDatabaseDetails <- PatientLevelPrediction::createDatabaseDetails(
     connectionDetails= connectionDetails,
@@ -126,7 +128,7 @@ applyDeadModel <- function(connectionDetails,
       plpModel$modelDesign$covariateSettings
 
     plpData <- tryCatch({
-      do.call(getPlpData, getPlpDataSettings)
+      do.call(PatientLevelPrediction::getPlpData, getPlpDataSettings)
     },
     error = function(e) {
       ParallelLogger::logError(e)
