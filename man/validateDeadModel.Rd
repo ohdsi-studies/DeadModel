@@ -4,12 +4,24 @@
 \alias{validateDeadModel}
 \title{Validate death plp prediction model}
 \usage{
-validateDeadModel(connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema,
-  oracleTempSchema = NULL, cohortTable, targetId, outcomeId,
-  packageName = "DeadModel")
+validateDeadModel(
+  connectionDetails,
+  cdmDatabaseSchema,
+  cdmDatabaseName = cdmDatabaseSchema,
+  cohortDatabaseSchema,
+  tempEmulationSchema = NULL,
+  cohortTable,
+  targetId,
+  outcomeId,
+  packageName = "DeadModel"
+)
 }
 \arguments{
-\item{oracleTempSchema}{The temp schema for oracle (default is NULL)}
+\item{cdmDatabaseSchema}{The schema holding the CDM data}
+
+\item{cdmDatabaseName}{A friendly name for the database}
+
+\item{tempEmulationSchema}{The temp schema for oracle (default is NULL)}
 
 \item{cohortTable}{The name of the cohort table}
 
@@ -18,8 +30,6 @@ validateDeadModel(connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema,
 \item{outcomeId}{The cohort definition id of the outcome}
 
 \item{connectioDetails}{The connections details for connecting to the CDM}
-
-\item{cdmDatabaseschema}{The schema holding the CDM data}
 
 \item{cohortDatabaseschema}{The schema holding the cohort table}
 }

@@ -1,0 +1,19 @@
+{
+  "analysisId": 1,
+  "analysisSource": "",
+  "developmentDatabase": "optum DOD",
+  "developmentDatabaseSchema": "optum DOD",
+  "attrition": {
+    "description": ["Original cohorts", "First exposure only", "At least 365 days of observation prior", "No prior outcome"],
+    "targetCount": [1000000, 1000000, 1000000, 1000000],
+    "uniquePeople": [1000000, 1000000, 1000000, 1000000],
+    "outcomes": [24531, 24531, 24531, 24531],
+    "attr_class": "data.frame",
+    "attr_row.names": [1, 2, 3, 4]
+  },
+  "trainingTime": "NA",
+  "trainingDate": "NA",
+  "modelName": "Logistic Regression",
+  "finalModelParameters": [0.0264, 41134763, -25353.9741],
+  "hyperParamSearch": [0.0264, 41134763, -25353.9741]
+}

@@ -4,17 +4,26 @@
 \alias{applyDeadModel}
 \title{Applies death risk model to new cohort}
 \usage{
-applyDeadModel(connectionDetails, cdmDatabaseSchema, cohortDatabaseSchema,
-  oracleTempSchema = NULL, cohortTable, cohortId)
+applyDeadModel(
+  connectionDetails,
+  cdmDatabaseSchema,
+  cdmDatabaseName,
+  cohortDatabaseSchema,
+  tempEmulationSchema = NULL,
+  cohortTable,
+  cohortId
+)
 }
 \arguments{
 \item{connectionDetails}{The connection details to connect to a database}
 
 \item{cdmDatabaseSchema}{The common data model schema}
 
+\item{cdmDatabaseName}{A friendly name for the database}
+
 \item{cohortDatabaseSchema}{The database schema containing the cohort you wish to apply the death risk prediction to}
 
-\item{oracleTempSchema}{The temp schema for oracle (default is NULL)}
+\item{tempEmulationSchema}{The temp schema for oracle (default is NULL)}
 
 \item{cohortTable}{The table containing the cohort you want to apply the death risk model to}
 

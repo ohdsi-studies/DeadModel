@@ -23,9 +23,10 @@
 #' This will run and evaluate an exisitng death plpModel
 #'
 #' @param connectioDetails The connections details for connecting to the CDM
-#' @param cdmDatabaseschema  The schema holding the CDM data
+#' @param cdmDatabaseSchema  The schema holding the CDM data
+#' @param cdmDatabaseName  A friendly name for the database
 #' @param cohortDatabaseschema The schema holding the cohort table
-#' @param oracleTempSchema  The temp schema for oracle (default is NULL)
+#' @param tempEmulationSchema  The temp schema for oracle (default is NULL)
 #' @param cohortTable         The name of the cohort table
 #' @param targetId          The cohort definition id of the target population
 #' @param outcomeId         The cohort definition id of the outcome
@@ -36,65 +37,34 @@
 #' @export
 validateDeadModel <- function(connectionDetails,
                                    cdmDatabaseSchema,
+                                   cdmDatabaseName = cdmDatabaseSchema,
                                    cohortDatabaseSchema,
-                                   oracleTempSchema = NULL,
+                              tempEmulationSchema = NULL,
                                    cohortTable,
                                    targetId,
                                    outcomeId,
                                    packageName='DeadModel'){
 
-  plpResult <- PatientLevelPrediction::loadPlpResult(system.file('plp_models', package=packageName))
+  plpModel <- PatientLevelPrediction::loadPlpModel(system.file('model', package=packageName))
   writeLines('Implementing DEAD model...')
-  result <- PatientLevelPrediction::externalValidatePlp(plpResult = plpResult,
-                                                        oracleTempSchema = oracleTempSchema,
-                                                        connectionDetails=connectionDetails,
-                                                        validationSchemaCdm=cdmDatabaseSchema,
-                                                        validationSchemaTarget=cohortDatabaseSchema,
-                                                        validationSchemaOutcome = cohortDatabaseSchema,
-                                                        validationTableTarget=cohortTable,
-                                                        validationTableOutcome = cohortTable,
-                                                        validationIdTarget=targetId,
-                                                        validationIdOutcome=outcomeId,
-                                                        keepPrediction=T,
-                                                        databaseNames = 'Missing')
+  result <- PatientLevelPrediction::externalValidateDbPlp(
+    plpModel = plpModel,
+   validationDatabaseDetails = PatientLevelPrediction::createDatabaseDetails(
+     connectionDetails=connectionDetails,
+     cdmDatabaseSchema = cdmDatabaseSchema,
+     cdmDatabaseName = cdmDatabaseName,
+     tempEmulationSchema =  tempEmulationSchema,
+     cohortDatabaseSchema = cohortDatabaseSchema,
+     cohortTable = cohortTable,
+     outcomeDatabaseSchema = cohortDatabaseSchema,
+     outcomeTable = cohortTable,
+     targetId = targetId,
+     outcomeIds = outcomeId
+   ),
+   validationRestrictPlpDataSettings = PatientLevelPrediction::createRestrictPlpDataSettings()
+     )
+
   return(result)
-}
-
-
-
-#==========================
-#  Create death risk covariate
-#==========================
-#' Create set and get function for a custom covariate corresponding to death risk
-#'
-#' @details
-#' This will create custom covariate functions in your enviroment for creating
-#' the risk of being dead
-#'
-#' @param covariateConstructionName  This is used to create the custom covariate function names
-#' @param analysisId                 The analysis id for the custom covariate
-#' @param eniviron                   The environment to add the custom covariate functions
-#'
-#' @return
-#' The names of the two functions added to the environment
-#'
-#' @export
-createDeadCovariate <- function(covariateConstructionName = 'DeadRiskCov',
-                                   analysisId = 967,
-                                   eniviron){
-
-  plpResult <- PatientLevelPrediction::loadPlpResult(system.file('plp_models', package='DeadModel'))
-
-  result <- PatientLevelPrediction::createLrSql(models = plpResult$model,
-                                      modelNames = 'DEAD model risk score',
-                                      covariateConstructionName = covariateConstructionName,
-                                      analysisId = analysisId, e=eniviron )
-
-  names=c(paste0('create',covariateConstructionName,'CovariateSettings'),
-  paste0('get',covariateConstructionName,'CovariateSettings'))
-
-  return(names)
-
 }
 
 
@@ -109,8 +79,9 @@ createDeadCovariate <- function(covariateConstructionName = 'DeadRiskCov',
 #'
 #' @param connectionDetails The connection details to connect to a database
 #' @param cdmDatabaseSchema  The common data model schema
+#' @param cdmDatabaseName  A friendly name for the database
 #' @param cohortDatabaseSchema  The database schema containing the cohort you wish to apply the death risk prediction to
-#' @param oracleTempSchema  The temp schema for oracle (default is NULL)
+#' @param tempEmulationSchema  The temp schema for oracle (default is NULL)
 #' @param cohortTable   The table containing the cohort you want to apply the death risk model to
 #' @param cohortId   The cohort_definition_id defining the cohort you wish to apply the death risk model to
 #'
@@ -120,80 +91,61 @@ createDeadCovariate <- function(covariateConstructionName = 'DeadRiskCov',
 #' @export
 applyDeadModel <- function(connectionDetails,
                               cdmDatabaseSchema,
+                           cdmDatabaseName,
                               cohortDatabaseSchema,
-                              oracleTempSchema = NULL,
+                           tempEmulationSchema = NULL,
                               cohortTable,
                               cohortId){
 
-  plpResult <- PatientLevelPrediction::loadPlpResult(system.file('plp_models', package='DeadModel'))
+  plpModel <- PatientLevelPrediction::loadPlpModel(system.file('model', package='DeadModel'))
 
-  # get similar plpData
-  newData <- PatientLevelPrediction::similarPlpData(plpModel = plpResult,
-                                                    newOracleTempSchema = oracleTempSchema,
-                                                    createCohorts = F,
-                                                    newConnectionDetails = connectionDetails,
-                                                    newCdmDatabaseSchema = cdmDatabaseSchema,
-                                                    newCohortDatabaseSchema = cohortDatabaseSchema,
-                                                    newCohortTable = cohortTable,
-                                                    newCohortId = cohortId,
-                                                    newOutcomeDatabaseSchema = cohortDatabaseSchema,
-                                                    newOutcomeTable = cohortTable,
-                                                    newOutcomeId = -999, sample = NULL,
-                                                    createPopulation = F
-                                                    )
-  # apply Model
-  result <- PatientLevelPrediction::applyModel(population = newData$cohorts,
-                                     plpData = newData,
-                                     plpModel = plpResult$model,
-                                     calculatePerformance = F)
+  checkIsClass(plpModel, 'plpModel')
 
-  return(result$prediction)
+  validationDatabaseDetails <- PatientLevelPrediction::createDatabaseDetails(
+    connectionDetails= connectionDetails,
+    cdmDatabaseSchema = cdmDatabaseSchema,
+    cdmDatabaseName = cdmDatabaseName,
+    tempEmulationSchema =  tempEmulationSchema,
+    cohortDatabaseSchema = cohortDatabaseSchema,
+    cohortTable = cohortTable,
+    outcomeDatabaseSchema = cohortDatabaseSchema,
+    outcomeTable = cohortTable,
+    targetId = cohortId,
+    outcomeIds = -999
+  )
+
+    ParallelLogger::logInfo(paste('Validating model on', cdmDatabaseName))
+
+    # Step 1: get data
+    #=======
+
+    getPlpDataSettings <- list(databaseDetails = validationDatabaseDetails,
+                               restrictPlpDataSettings = PatientLevelPrediction::createRestrictPlpDataSettings())
+
+    getPlpDataSettings$covariateSettings <-
+      plpModel$modelDesign$covariateSettings
+
+    plpData <- tryCatch({
+      do.call(getPlpData, getPlpDataSettings)
+    },
+    error = function(e) {
+      ParallelLogger::logError(e)
+      return(NULL)
+    })
+
+
+    # Step 2: Apply model to plpData and population
+    #=======
+
+    result <- PatientLevelPrediction::predictPlp(
+      plpModel = plpModel,
+      plpData = plpData,
+      population = plpData$cohort
+      )
+
+    return(result)
 }
 
-
-
-
-#' Checks the plp package is installed sufficiently for the network study and does other checks if needed
-#'
-#' @details
-#' This will check that the network study dependancies work
-#'
-#' @param connectioDetails The connections details for connecting to the CDM
-#'
-#' @return
-#' A number (a value other than 1 means an issue with the install)
-#'
-#' @export
-
-checkInstall <- function(connectionDetails=NULL){
-  result <- PatientLevelPrediction::checkPlpInstallation(connectionDetails=connectionDetails,
-                       python=F)
-  return(result)
-}
-
-
-flog.warn <- ParallelLogger::logWarn
-
-
-
-
-
-#' View DEAD prediction model in shiny app
-#'
-#' @details
-#' This will open a shiny app to explore the DEAD model
-#'
-#'
-#' @return
-#' NULL
-#'
-#' @export
-viewDeadShiny <- function(packageName='DeadModel'){
-
-  plpResult <- PatientLevelPrediction::loadPlpResult(system.file('plp_models', package=packageName))
-  PatientLevelPrediction::viewPlp(plpResult)
-
-}
 
 #' View DEAD prediction model coefficients
 #'
@@ -207,9 +159,9 @@ viewDeadShiny <- function(packageName='DeadModel'){
 #' @export
 viewDeadCoefficients <- function(packageName='DeadModel'){
 
-  plpResult <- PatientLevelPrediction::loadPlpResult(system.file('plp_models', package=packageName))
+  plpModel <- PatientLevelPrediction::loadPlpModel(system.file('model', package=packageName))
 
-  covs <- plpResult$covariateSummary[!is.na(plpResult$covariateSummary$covariateValue),]
+  covs <- plpModel$covariateImportance[!is.na(plpModel$covariateImportance$covariateValue),]
   covs <- covs[covs$covariateValue!=0,]
   covs <- covs[order(-abs(covs$covariateValue)),]
 
