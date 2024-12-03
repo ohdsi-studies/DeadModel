@@ -82,16 +82,18 @@ outcomeId <- '(if externally validating model) cohortDefinitionId for dead peopl
 # code to do prediction for each patient in the cohortTable with cohort_definition_id 1
 prediction <- applyDeadModel(connectionDetails = connectionDetails,
                                 cdmDatabaseSchema = cdmDatabaseSchema,
+                                cdmDatabaseName = 'database name',
                                 cohortDatabaseSchema = cohortDatabaseSchema,
-                                oracleTempSchema = NULL,
+                                tempEmulationSchema = NULL,
                                 cohortTable = cohortTable,
                                 cohortId=cohortId)
 
 # code to externall validate the model
 validation <- validateDeadModel(connectionDetails = connectionDetails,
                      cdmDatabaseSchema = cdmDatabaseSchema,
+                     cdmDatabaseName = 'database name',
                      cohortDatabaseSchema = cohortDatabaseSchema,
-                     oracleTempSchema = NULL,
+                     tempEmulationSchema = NULL,
                      cohortTable = cohortTable,
                      targetId = cohortId,
                      outcomeId = outcomeId)
