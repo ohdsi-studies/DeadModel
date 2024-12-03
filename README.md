@@ -56,14 +56,10 @@ library(DeadModel)
 # To view the model coefficients:
 viewDeadCoefficients()
 
-# To view the model performance in a shiny app
-viewDeadShiny()
-
 #==============
 # APPLY
 #==============
 # INPUTS:
-options(fftempdir = 'T:/fftemp')
 dbms <- "pdw"
 user <- NULL
 pw <- NULL
@@ -83,9 +79,6 @@ cohortId <- 'cohortDefinitionId for target cohort people in cohortTable'
 
 outcomeId <- '(if externally validating model) cohortDefinitionId for dead people in cohortTable'
 
-# Now run the following to check plp is working:
-checkInstall(connectionDetails=connectionDetails)
-
 # code to do prediction for each patient in the cohortTable with cohort_definition_id 1
 prediction <- applyDeadModel(connectionDetails = connectionDetails,
                                 cdmDatabaseSchema = cdmDatabaseSchema,
@@ -103,12 +96,6 @@ validation <- validateDeadModel(connectionDetails = connectionDetails,
                      targetId = cohortId,
                      outcomeId = outcomeId)
                      
-# code to create custom covariate corresponding to smoking risk
-e <- environment()
-createDeadCovariate(covariateConstructionName = 'DeadRiskCov',
-                                   analysisId = 967,
-                                   eniviron=e)
-#createDeadRiskCovCovariateSettings()
 
 ```
 
